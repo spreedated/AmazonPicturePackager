@@ -3,59 +3,85 @@
         xmlns:vm="using:AmazonPicturePackager.ViewModels"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+        xmlns:vl="using:AmazonPicturePackager.ViewLogic"
+        mc:Ignorable="d"
         x:Class="AmazonPicturePackager.Views.MainWindow"
         x:DataType="vm:MainWindowViewModel"
-        Icon="/Assets/avalonia-logo.ico"
-        Title="AmazonPicturePackager"
-		WindowStartupLocation="CenterScreen">
+        Icon="/Resources/logo.ico"
+        Title="{Binding TitleName}"
+        WindowStartupLocation="CenterScreen"
+        SizeToContent="WidthAndHeight"
+        CanResize="False"
+        Padding="12,0,12,0">
 
     <Window.DataContext>
         <vm:MainWindowViewModel/>
     </Window.DataContext>
 
-	<Grid>
-		<Grid.RowDefinitions>
-			<RowDefinition Height="64"/>
-			<RowDefinition/>
-		</Grid.RowDefinitions>
+  <Grid>
+    <Grid.RowDefinitions>
+      <RowDefinition Height="64"/>
+      <RowDefinition/>
+      <RowDefinition/>
+    </Grid.RowDefinitions>
 
-		<StackPanel Orientation="Horizontal" Margin="4">
-			<Image Source="avares://AmazonPicturePackager/Resources/logo_designbleche_dark.png" VerticalAlignment="Center" Height="64" Width="192"/>
-			<StackPanel Orientation="Vertical">
-				<TextBlock Text="{Binding TitleName}" Margin="12,8,0,0" FontSize="18" FontWeight="Bold" VerticalAlignment="Top"/>
-				<TextBlock Text="{Binding TitleVersion}" Margin="12,0,0,0" FontSize="14" FontWeight="Bold" FontStyle="Italic" VerticalAlignment="Top"/>
-			</StackPanel>
-		</StackPanel>
+    <StackPanel Orientation="Horizontal" Margin="4">
+      <Image Source="avares://AmazonPicturePackager/Resources/logo_designbleche_dark.png" VerticalAlignment="Center" Height="64" Width="192"/>
+      <StackPanel Orientation="Vertical">
+        <TextBlock Text="{Binding TitleName}" Margin="12,8,0,0" FontSize="18" FontWeight="Bold" VerticalAlignment="Top"/>
+        <TextBlock Text="{Binding TitleVersion}" Margin="12,0,0,0" FontSize="14" FontWeight="Bold" FontStyle="Italic" VerticalAlignment="Top"/>
+      </StackPanel>
+    </StackPanel>
 
-		<StackPanel Orientation="Vertical" Grid.Row="1" Margin="4">
-			<StackPanel Orientation="Horizontal" VerticalAlignment="Top">
-				<TextBlock Text="Original picture:" VerticalAlignment="Center"/>
-				<TextBox Height="32" Width="240" Margin="12,0,12,0" VerticalAlignment="Center" Text="{Binding OriginalPicturePath, Mode=TwoWay}" />
-				<Button Content="Browse" Command="{Binding BrowseCommand}" />
-			</StackPanel>
+    <StackPanel Orientation="Vertical" Grid.Row="1" Margin="4">
+      <StackPanel Orientation="Horizontal" VerticalAlignment="Top">
+        <TextBlock Text="Original picture:" VerticalAlignment="Center"/>
+        <TextBox Height="32" Width="240" Margin="12,0,12,0" VerticalAlignment="Center" Text="{Binding OriginalPicturePath, Mode=TwoWay}" IsEnabled="{Binding IsBusy, Converter={vl:BoolConverter}}" />
+        <Button Content="Browse" Command="{Binding BrowseCommand}" IsEnabled="{Binding IsBusy, Converter={vl:BoolConverter}}" />
+      </StackPanel>
 
-			<Grid Margin="0,12,0,0">
-				<Grid.ColumnDefinitions>
-					<ColumnDefinition Width="Auto"/>
-					<ColumnDefinition/>
-				</Grid.ColumnDefinitions>
-				
-				<StackPanel Grid.Column="0" Orientation="Vertical" Margin="0,0,24,0">
-					<TextBlock Text="{Binding AsinCount, Mode=OneWay, StringFormat=ASINs: {0}}" Margin="0,0,0,4" />
-					<TextBox Text="{Binding AsinList, Mode=TwoWay}" Width="256" HorizontalAlignment="Left" Height="240" AcceptsReturn="True"/>
-				</StackPanel>
+      <Grid Margin="0,12,0,0">
+        <Grid.ColumnDefinitions>
+          <ColumnDefinition Width="Auto"/>
+          <ColumnDefinition/>
+        </Grid.ColumnDefinitions>
+        
+        <StackPanel Grid.Column="0" Orientation="Vertical" Margin="0,0,24,0">
+          <TextBlock Text="{Binding AsinCount, Mode=OneWay, StringFormat=Found ASINs: {0}, UpdateSourceTrigger=PropertyChanged}" Margin="0,0,0,4" />
+          <TextBox Text="{Binding AsinList, Mode=TwoWay}" Width="256" HorizontalAlignment="Left" Height="240" AcceptsReturn="True" IsEnabled="{Binding IsBusy, Converter={vl:BoolConverter}}"/>
+        </StackPanel>
 
-				<StackPanel Grid.Column="1" Orientation="Vertical">
-					<TextBlock Text="Options"/>
-				</StackPanel>
-			</Grid>
-			
+        <StackPanel Grid.Column="1" Orientation="Vertical">
+          <TextBlock Text="Options" FontWeight="Bold"/>
+          
+          <StackPanel Orientation="Horizontal" Margin="0,0,0,8">
+            <TextBlock Text="Amazon Picture Code:" VerticalAlignment="Center" Margin="0,0,8,0" />
+            <ComboBox ItemsSource="{Binding AmazonPictureCodes, Mode=OneWay}" SelectedItem="{Binding SelectedAmazonPictureCode}" IsEnabled="{Binding IsBusy, Converter={vl:BoolConverter}}" />
+          </StackPanel>
 
-			<StackPanel Margin="0,12,0,0">
-				<Button Content="Pack" />
-			</StackPanel>
-		</StackPanel>
-	</Grid>
+          <StackPanel Orientation="Horizontal">
+            <TextBlock Text="Imagecount in ZIP Files:" VerticalAlignment="Center" Margin="0,0,8,0" />
+            <NumericUpDown Minimum="10" Maximum="800" Value="{Binding FileToPackInZip}" ShowButtonSpinner="False" IsEnabled="{Binding IsBusy, Converter={vl:BoolConverter}}" />
+          </StackPanel>
+        </StackPanel>
+      </Grid>
+
+      <StackPanel Margin="0,12,0,0" Orientation="Horizontal">
+        <Button Content="Pack!" Command="{Binding PackCommand}" Margin="0,0,8,0" />
+        <Button Content="Abort" Command="{Binding AbortCommand}" />
+      </StackPanel>
+
+    </StackPanel>
+
+    <Grid Grid.Row="2" Margin="12,0,0,8" VerticalAlignment="Bottom">
+      <Grid.ColumnDefinitions>
+        <ColumnDefinition Width="Auto" MinWidth="240"/>
+        <ColumnDefinition Width="*"/>
+      </Grid.ColumnDefinitions>
+      
+      <TextBlock Grid.Column="0" Text="{Binding Status}" FontSize="10" Foreground="#888888" Margin="0,0,12,0" />
+      <ProgressBar Grid.Column="1" Height="8" IsVisible="{Binding IsBusy}" Value="{Binding ProgressBarValue}" Maximum="{Binding ProgressBarMaximum}" />
+    </Grid>
+  </Grid>
 
 </Window>
