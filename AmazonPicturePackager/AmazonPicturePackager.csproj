@@ -10,6 +10,7 @@
     <NoWarn>1701;1702;IDE0063;IDE0290</NoWarn>
     <AssemblyTitle>Amazon Picture Packager</AssemblyTitle>
     <AssemblyName>AmazonPicturePackager</AssemblyName>
+    <ApplicationIcon>Resources\logo.ico</ApplicationIcon>
   </PropertyGroup>
 
   <ItemGroup>

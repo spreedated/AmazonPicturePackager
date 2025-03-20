@@ -1,4 +1,9 @@
-﻿using System;
+﻿using AmazonPicturePackager.Logic;
+using Avalonia.Controls;
+using Avalonia.Platform.Storage;
+using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
@@ -8,12 +13,6 @@ using System.Linq;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
-using AmazonPicturePackager.Logic;
-using Avalonia.Controls;
-using Avalonia.Platform.Storage;
-using Avalonia.Threading;
-using CommunityToolkit.Mvvm.ComponentModel;
-using CommunityToolkit.Mvvm.Input;
 
 namespace AmazonPicturePackager.ViewModels
 {
@@ -181,7 +180,7 @@ namespace AmazonPicturePackager.ViewModels
 
             foreach (string a in this.asins.Select(x => x.ToUpper()))
             {
-                await Task.Run(() => File.Copy(imagefile, Path.Combine(copypath, $"{a}.{this.SelectedAmazonPictureCode}.{Path.GetExtension(this.OriginalPicturePath).Replace(".","")}"), true));
+                await Task.Run(() => File.Copy(imagefile, Path.Combine(copypath, $"{a}.{this.SelectedAmazonPictureCode}.{Path.GetExtension(this.OriginalPicturePath).Replace(".", "")}"), true));
             }
 
             string readyPath = Path.Combine(AppContext.BaseDirectory, "ready");

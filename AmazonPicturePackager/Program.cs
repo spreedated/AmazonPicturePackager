@@ -1,7 +1,7 @@
 ﻿#pragma warning disable S1118
 
-using System;
 using Avalonia;
+using System;
 
 namespace AmazonPicturePackager
 {

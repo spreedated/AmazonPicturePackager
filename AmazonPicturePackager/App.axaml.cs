@@ -1,9 +1,9 @@
-using System.Linq;
 using AmazonPicturePackager.Views;
 using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Data.Core.Plugins;
 using Avalonia.Markup.Xaml;
+using System.Linq;
 
 namespace AmazonPicturePackager
 {
