@@ -4,6 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:vl="using:AmazonPicturePackager.ViewLogic"
+        xmlns:nuie="using:neXn.Ui.Avalonia.Elements"
         mc:Ignorable="d"
         x:Class="AmazonPicturePackager.Views.MainWindow"
         x:DataType="vm:MainWindowViewModel"
@@ -77,10 +78,13 @@
       <Grid.ColumnDefinitions>
         <ColumnDefinition Width="Auto" MinWidth="240"/>
         <ColumnDefinition Width="*"/>
+        <ColumnDefinition Width="*"/>
       </Grid.ColumnDefinitions>
       
       <TextBlock Grid.Column="0" Text="{Binding Status}" FontSize="10" Foreground="#888888" Margin="0,0,12,0" />
       <ProgressBar Grid.Column="1" Height="8" IsVisible="{Binding IsBusy}" Value="{Binding ProgressBarValue}" Maximum="{Binding ProgressBarMaximum}" />
+      
+      <nuie:HeartedCredits Grid.Column="2" HorizontalAlignment="Right" />
     </Grid>
   </Grid>
 

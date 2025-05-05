@@ -3,6 +3,8 @@ using Avalonia.Controls;
 using Avalonia.Platform.Storage;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using neXn.Lib;
+using neXn.Ui.Animation;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -13,11 +15,13 @@ using System.Linq;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace AmazonPicturePackager.ViewModels
 {
     public partial class MainWindowViewModel : ObservableObject
     {
+        private readonly TextWaitingAnimation textWaitingAnimation;
         private readonly List<string> asins = [];
         private CancellationTokenSource busyCts;
 
@@ -25,7 +29,7 @@ namespace AmazonPicturePackager.ViewModels
         private string titleName = Globals.Assembly.GetCustomAttribute<AssemblyTitleAttribute>()?.Title;
 
         [ObservableProperty]
-        private string titleVersion = $"v{Globals.Assembly.GetName().Version}";
+        private string titleVersion = $"v{Globals.Assembly.GetName().Version.ToNiceString()}";
 
         [ObservableProperty]
         private Window instance;
@@ -56,7 +60,7 @@ namespace AmazonPicturePackager.ViewModels
         private bool isBusy;
 
         [ObservableProperty]
-        private int progressBarValue;
+        private int progressBarValue = 100;
 
         [ObservableProperty]
         private int progressBarMaximum;
@@ -81,9 +85,26 @@ namespace AmazonPicturePackager.ViewModels
         #region Ctor
         public MainWindowViewModel()
         {
+            Globals.AppStatus.StatusChanged += (s, e) =>
+            {
+                this.IsBusy = Globals.AppStatus.IsBusy;
+            };
 
+            this.textWaitingAnimation = new()
+            {
+                UseBrackets = true,
+                AnimationType = TextWaitingAnimation.AnimationTypes.BlockChars,
+                Interval = 400
+            };
+            this.textWaitingAnimation.AnimationChanged += this.TextWaitingAnimation_AnimationChanged;
+            this.textWaitingAnimation.Start();
         }
         #endregion
+
+        private void TextWaitingAnimation_AnimationChanged(object sender, string e)
+        {
+            this.Status = $"{e} {Globals.AppStatus.Status}";
+        }
 
         private bool CanExecutePack()
         {
@@ -147,7 +168,7 @@ namespace AmazonPicturePackager.ViewModels
         {
             this.busyCts = new();
 
-            this.IsBusy = true;
+            Globals.AppStatus.Change("Processing...", true);
             this.ProgressBarValue = 0;
             this.ProgressBarMaximum = this.asins.Count;
 
@@ -160,16 +181,16 @@ namespace AmazonPicturePackager.ViewModels
 
             string imagefile = Path.Combine(dir, Path.GetFileName(this.OriginalPicturePath));
 
-            this.Status = "Copying...";
+            Globals.AppStatus.Change("Copying...", true);
 
             await Task.Run(() => File.Copy(this.OriginalPicturePath, imagefile, true));
 
             if (!File.Exists(Path.Combine(dir, imagefile)))
             {
-                this.Status = "Error copying";
+                Globals.AppStatus.Change("Error copying", true);
             }
 
-            this.Status = "File copied to temp";
+            Globals.AppStatus.Change("File copied to temp", true);
 
             string copypath = Path.Combine(dir, "files");
 
@@ -190,7 +211,7 @@ namespace AmazonPicturePackager.ViewModels
                 Directory.CreateDirectory(readyPath);
             }
 
-            this.Status = "Processing...";
+            Globals.AppStatus.Change("Processing...", true);
 
             await Task.Run(() =>
             {
@@ -220,7 +241,7 @@ namespace AmazonPicturePackager.ViewModels
                             zip.CreateEntryFromFile(asinImage, Path.GetFileName(asinImage));
                             currentFilesPacked++;
 
-                            this.Status = $"Processing [{currentFilesPacked}/{this.asins.Count}]";
+                            Globals.AppStatus.Change($"Processing [{currentFilesPacked}/{this.asins.Count}]", true);
                             this.ProgressBarValue = currentFilesPacked;
                         }
                         zipNumber++;
@@ -229,19 +250,18 @@ namespace AmazonPicturePackager.ViewModels
                 }
             }, this.busyCts.Token);
 
-            this.Status = "Cleaning...";
+            Globals.AppStatus.Change("Cleaning...", true);
 
             await Task.Run(() => Directory.Delete(dir, true));
 
             if (this.busyCts.Token.IsCancellationRequested)
             {
-                this.Status = "Aborted";
-                this.IsBusy = false;
+                Globals.AppStatus.Change("Aborted", false, true);
                 this.busyCts?.Dispose();
                 return;
             }
 
-            this.Status = $"Ready - processed {this.AsinCount} files.";
+            Globals.AppStatus.Change($"Ready - processed {this.AsinCount} files.", true);
 
             this.AsinList = null;
 
@@ -252,7 +272,7 @@ namespace AmazonPicturePackager.ViewModels
                 Verb = "open"
             });
 
-            this.IsBusy = false;
+            Globals.AppStatus.SetDefaultStatus();
             this.busyCts?.Dispose();
         }
     }

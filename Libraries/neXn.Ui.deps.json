@@ -1,0 +1,23 @@
+{
+  "runtimeTarget": {
+    "name": ".NETCoreApp,Version=v9.0",
+    "signature": ""
+  },
+  "compilationOptions": {},
+  "targets": {
+    ".NETCoreApp,Version=v9.0": {
+      "neXn.Ui/9.0.2": {
+        "runtime": {
+          "neXn.Ui.dll": {}
+        }
+      }
+    }
+  },
+  "libraries": {
+    "neXn.Ui/9.0.2": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    }
+  }
+}
