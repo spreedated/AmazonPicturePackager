@@ -11,8 +11,6 @@
     <AssemblyTitle>Amazon Picture Packager</AssemblyTitle>
     <AssemblyName>AmazonPicturePackager</AssemblyName>
     <ApplicationIcon>Resources\logo.ico</ApplicationIcon>
-    <Version>1.1.0</Version>
-    <Authors>Dante Karl Wackermann</Authors>
   </PropertyGroup>
 
   <ItemGroup>
