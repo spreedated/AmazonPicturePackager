@@ -48,7 +48,7 @@
         </Grid.ColumnDefinitions>
         
         <StackPanel Grid.Column="0" Orientation="Vertical" Margin="0,0,24,0">
-          <TextBlock Text="{Binding AsinCount, Mode=OneWay, StringFormat=Found ASINs: {0}, UpdateSourceTrigger=PropertyChanged}" Margin="0,0,0,4" />
+          <TextBlock Text="{Binding AsinCount, Mode=OneWay, StringFormat=Found distinct ASINs: {0}, UpdateSourceTrigger=PropertyChanged}" Margin="0,0,0,4" />
           <TextBox Text="{Binding AsinList, Mode=TwoWay}" Width="256" HorizontalAlignment="Left" Height="240" AcceptsReturn="True" IsEnabled="{Binding IsBusy, Converter={vl:BoolConverter}}"/>
         </StackPanel>
 
@@ -61,7 +61,7 @@
           </StackPanel>
 
           <StackPanel Orientation="Horizontal">
-            <TextBlock Text="Imagecount in ZIP Files:" VerticalAlignment="Center" Margin="0,0,8,0" />
+            <TextBlock Text="Imagecount per ZIP Files:" VerticalAlignment="Center" Margin="0,0,8,0" />
             <NumericUpDown Minimum="10" Maximum="800" Value="{Binding FileToPackInZip}" ShowButtonSpinner="False" IsEnabled="{Binding IsBusy, Converter={vl:BoolConverter}}" />
           </StackPanel>
         </StackPanel>
@@ -83,8 +83,11 @@
       
       <TextBlock Grid.Column="0" Text="{Binding Status}" FontSize="10" Foreground="#888888" Margin="0,0,12,0" />
       <ProgressBar Grid.Column="1" Height="8" IsVisible="{Binding IsBusy}" Value="{Binding ProgressBarValue}" Maximum="{Binding ProgressBarMaximum}" />
-      
-      <nuie:HeartedCredits Grid.Column="2" HorizontalAlignment="Right" />
+
+      <StackPanel Orientation="Horizontal" Grid.Column="2" HorizontalAlignment="Right" VerticalAlignment="Bottom">
+        <TextBlock Text="{Binding TitleVersion}" FontStyle="Italic" FontSize="10" Margin="0,0,8,0" FontWeight="Bold" Foreground="#555555" />
+        <nuie:HeartedCredits HorizontalAlignment="Right"/>
+      </StackPanel>
     </Grid>
   </Grid>
 

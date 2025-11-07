@@ -1,10 +1,13 @@
 ﻿using AmazonPicturePackager.Logic;
+using Avalonia.Collections;
 using Avalonia.Controls;
 using Avalonia.Platform.Storage;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using Microsoft.Extensions.Logging;
 using neXn.Lib;
 using neXn.Ui.Animation;
+using Serilog.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -15,12 +18,12 @@ using System.Linq;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace AmazonPicturePackager.ViewModels
 {
     public partial class MainWindowViewModel : ObservableObject
     {
+        private readonly ILogger logger = new SerilogLoggerProvider().CreateLogger("MainWindowViewModel");
         private readonly TextWaitingAnimation textWaitingAnimation;
         private readonly List<string> asins = [];
         private CancellationTokenSource busyCts;
@@ -49,7 +52,7 @@ namespace AmazonPicturePackager.ViewModels
         private BindingList<string> amazonPictureCodes = [.. Constants.amazonImageCodes];
 
         [ObservableProperty]
-        private string selectedAmazonPictureCode = Constants.amazonImageCodes[0];
+        private string selectedAmazonPictureCode;
 
         [ObservableProperty]
         private string status = "Ready";
@@ -68,18 +71,32 @@ namespace AmazonPicturePackager.ViewModels
         [ObservableProperty]
         private int fileToPackInZip = 200;
 
+        partial void OnSelectedAmazonPictureCodeChanged(string value)
+        {
+            Globals.UserConfig.RuntimeConfiguration.LastUsedImageCode = Array.IndexOf(Constants.amazonImageCodes, value);
+            Task.Run(Globals.UserConfig.Save);
+        }
+
+        partial void OnFileToPackInZipChanged(int value)
+        {
+            Globals.UserConfig.RuntimeConfiguration.LastUsedFilesPerZip = value;
+            Task.Run(Globals.UserConfig.Save);
+        }
+
         partial void OnAsinListChanged(string value)
         {
             if (value == null)
             {
                 this.asins.Clear();
-                this.AsinCount = 0;
+                this.AsinCount = default;
                 return;
             }
 
             this.asins.Clear();
-            this.asins.AddRange(value.Replace("\r", "").Split('\n').Where(x => !string.IsNullOrEmpty(x) && x.Length == 10));
+            this.asins.AddRange(value.Replace("\r", "").Split('\n').Where(x => !string.IsNullOrEmpty(x) && x.Length == 10).Distinct());
             this.AsinCount = this.asins.Count;
+
+            this.logger.LogTrace("ASIN list changed, total valid & distinct ASINs: {AsinCount}", this.AsinCount);
         }
 
         #region Ctor
@@ -96,10 +113,22 @@ namespace AmazonPicturePackager.ViewModels
                 AnimationType = TextWaitingAnimation.AnimationTypes.BlockChars,
                 Interval = 400
             };
+
+            this.LoadUserConfigSettingsToViewModel();
+
             this.textWaitingAnimation.AnimationChanged += this.TextWaitingAnimation_AnimationChanged;
             this.textWaitingAnimation.Start();
         }
         #endregion
+
+        private void LoadUserConfigSettingsToViewModel()
+        {
+            if (Globals.UserConfig != null)
+            {
+                this.SelectedAmazonPictureCode = Constants.amazonImageCodes[Globals.UserConfig.RuntimeConfiguration.LastUsedImageCode];
+                this.FileToPackInZip = Globals.UserConfig.RuntimeConfiguration.LastUsedFilesPerZip;
+            }
+        }
 
         private void TextWaitingAnimation_AnimationChanged(object sender, string e)
         {
@@ -172,7 +201,7 @@ namespace AmazonPicturePackager.ViewModels
             this.ProgressBarValue = 0;
             this.ProgressBarMaximum = this.asins.Count;
 
-            string dir = Path.Combine(AppContext.BaseDirectory, "tmp");
+            string dir = Path.Combine(Program.AppLocalBasePath, "temp");
 
             if (!Directory.Exists(dir))
             {
@@ -204,7 +233,7 @@ namespace AmazonPicturePackager.ViewModels
                 await Task.Run(() => File.Copy(imagefile, Path.Combine(copypath, $"{a}.{this.SelectedAmazonPictureCode}.{Path.GetExtension(this.OriginalPicturePath).Replace(".", "")}"), true));
             }
 
-            string readyPath = Path.Combine(AppContext.BaseDirectory, "ready");
+            string readyPath = Path.Combine(Program.AppLocalBasePath, "ready");
 
             if (!Directory.Exists(readyPath))
             {
