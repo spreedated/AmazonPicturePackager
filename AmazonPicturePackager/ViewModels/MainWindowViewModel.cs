@@ -218,7 +218,9 @@ namespace AmazonPicturePackager.ViewModels
             this.ProgressBarValue = 0;
             this.ProgressBarMaximum = this.asins.Count;
 
-            Processor.Packager p = new(Program.AppLocalBasePath, new SerilogLoggerProvider().CreateLogger("Processor.Packager"));
+            ILogger l = new SerilogLoggerProvider().CreateLogger("Processor.Packager");
+
+            Processor.Packager p = new(Program.AppLocalBasePath, l);
 
             p.CurrentPackedFilesCountChanged += (s, e) =>
             {

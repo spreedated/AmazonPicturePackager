@@ -101,7 +101,6 @@ namespace Processor
                             zip.CreateEntryFromFile(asinImage, Path.GetFileName(asinImage));
                             currentFilesPacked++;
 
-                            //Globals.AppStatus.Change($"Processing [{currentFilesPacked}/{this.asins.Count}]", true);
                             this.logger?.LogInformation("Processing [{Fpacked}/{Count}]", currentFilesPacked, asins.Length);
                             this.CurrentPackedFilesCountChanged?.Invoke(this, currentFilesPacked);
                         }
@@ -129,8 +128,7 @@ namespace Processor
 
             this.imagefile = Path.Combine(this.tempPath, Path.GetFileName(originalFilepath));
 
-            //Globals.AppStatus.Change("Copying...", true);
-            this.logger?.LogInformation("Copying file to temp");
+            this.logger?.LogTrace("Copying file to temp");
 
             await Task.Run(() => File.Copy(originalFilepath, imagefile, true), token);
 
@@ -140,8 +138,7 @@ namespace Processor
                 return false;
             }
 
-            //Globals.AppStatus.Change("File copied to temp", true);
-            this.logger?.LogInformation("File copied to temp");
+            this.logger?.LogTrace("File copied to temp");
 
             this.copypath = Path.Combine(this.tempPath, "files");
 
@@ -163,13 +160,11 @@ namespace Processor
                 return false;
             }
 
-            //Globals.AppStatus.Change("Processing...", true);
-            this.logger?.LogInformation("Starting packaging process");
+            this.logger?.LogTrace("Starting packaging process");
 
             await this.CreateZipFile(filesPerZip, token);
 
-            //Globals.AppStatus.Change("Cleaning...", true);
-            this.logger?.LogInformation("Cleaning temp files");
+            this.logger?.LogTrace("Cleaning temp files");
 
             await Task.Run(() => Directory.Delete(this.tempPath, true), token);
 
