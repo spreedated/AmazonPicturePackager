@@ -13,11 +13,8 @@
         WindowStartupLocation="CenterScreen"
         SizeToContent="WidthAndHeight"
         CanResize="False"
-        Padding="12,0,12,0">
-
-    <Window.DataContext>
-        <vm:MainWindowViewModel/>
-    </Window.DataContext>
+        Padding="12,0,12,0"
+        Initialized="Window_Initialized">
 
   <Grid>
     <Grid.RowDefinitions>
@@ -48,29 +45,46 @@
         </Grid.ColumnDefinitions>
         
         <StackPanel Grid.Column="0" Orientation="Vertical" Margin="0,0,24,0">
-          <TextBlock Text="{Binding AsinCount, Mode=OneWay, StringFormat=Found ASINs: {0}, UpdateSourceTrigger=PropertyChanged}" Margin="0,0,0,4" />
+          <TextBlock Text="{Binding AsinCount, Mode=OneWay, StringFormat=Found distinct ASINs: {0}, UpdateSourceTrigger=PropertyChanged}" Margin="0,0,0,4" />
           <TextBox Text="{Binding AsinList, Mode=TwoWay}" Width="256" HorizontalAlignment="Left" Height="240" AcceptsReturn="True" IsEnabled="{Binding IsBusy, Converter={vl:BoolConverter}}"/>
         </StackPanel>
 
-        <StackPanel Grid.Column="1" Orientation="Vertical">
-          <TextBlock Text="Options" FontWeight="Bold"/>
+        <Grid Grid.Column="1">
+          <StackPanel Orientation="Vertical">
+            <TextBlock Text="Options" FontWeight="Bold"/>
           
-          <StackPanel Orientation="Horizontal" Margin="0,0,0,8">
-            <TextBlock Text="Amazon Picture Code:" VerticalAlignment="Center" Margin="0,0,8,0" />
-            <ComboBox ItemsSource="{Binding AmazonPictureCodes, Mode=OneWay}" SelectedItem="{Binding SelectedAmazonPictureCode}" IsEnabled="{Binding IsBusy, Converter={vl:BoolConverter}}" />
+            <StackPanel Orientation="Horizontal" Margin="0,0,0,8">
+              <TextBlock Text="Amazon Picture Code:" VerticalAlignment="Center" Margin="0,0,8,0" />
+              <ComboBox ItemsSource="{Binding AmazonPictureCodes, Mode=OneWay}" SelectedItem="{Binding SelectedAmazonPictureCode}" IsEnabled="{Binding IsBusy, Converter={vl:BoolConverter}}" />
+            </StackPanel>
+
+            <StackPanel Orientation="Horizontal">
+              <TextBlock Text="Imagecount per ZIP Files:" VerticalAlignment="Center" Margin="0,0,8,0" />
+              <NumericUpDown Minimum="2" Maximum="800" Value="{Binding FileToPackInZip, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" ShowButtonSpinner="False" IsEnabled="{Binding IsBusy, Converter={vl:BoolConverter}}" />
+            </StackPanel>
           </StackPanel>
 
-          <StackPanel Orientation="Horizontal">
-            <TextBlock Text="Imagecount in ZIP Files:" VerticalAlignment="Center" Margin="0,0,8,0" />
-            <NumericUpDown Minimum="10" Maximum="800" Value="{Binding FileToPackInZip}" ShowButtonSpinner="False" IsEnabled="{Binding IsBusy, Converter={vl:BoolConverter}}" />
+          <StackPanel Orientation="Vertical" VerticalAlignment="Bottom">
+            <StackPanel Orientation="Horizontal">
+              <CheckBox Content="Open output folder" IsChecked="{Binding OpenOutputFolderWhenDone, Mode=TwoWay}" IsEnabled="{Binding IsBusy, Converter={vl:BoolConverter}}"/>
+            </StackPanel>
           </StackPanel>
-        </StackPanel>
+        </Grid>
       </Grid>
 
-      <StackPanel Margin="0,12,0,0" Orientation="Horizontal">
-        <Button Content="Pack!" Command="{Binding PackCommand}" Margin="0,0,8,0" />
-        <Button Content="Abort" Command="{Binding AbortCommand}" />
-      </StackPanel>
+      <Grid Margin="0,12,0,0">
+        <Grid.ColumnDefinitions>
+          <ColumnDefinition/>
+          <ColumnDefinition/>
+        </Grid.ColumnDefinitions>
+        
+        <StackPanel Orientation="Horizontal">
+          <Button Content="Pack!" Command="{Binding PackCommand}" Margin="0,0,8,0" />
+          <Button Content="Abort" Command="{Binding AbortCommand}" />
+        </StackPanel>
+
+        <Button Grid.Column="1" Content="Clear list" Command="{Binding ClearAsinListCommand}" Margin="0,0,0,0" HorizontalAlignment="Right" IsEnabled="{Binding IsBusy, Converter={vl:BoolConverter}}"/>
+      </Grid>
 
     </StackPanel>
 
@@ -81,10 +95,13 @@
         <ColumnDefinition Width="*"/>
       </Grid.ColumnDefinitions>
       
-      <TextBlock Grid.Column="0" Text="{Binding Status}" FontSize="10" Foreground="#888888" Margin="0,0,12,0" />
-      <ProgressBar Grid.Column="1" Height="8" IsVisible="{Binding IsBusy}" Value="{Binding ProgressBarValue}" Maximum="{Binding ProgressBarMaximum}" />
-      
-      <nuie:HeartedCredits Grid.Column="2" HorizontalAlignment="Right" />
+      <TextBlock Grid.Column="0" Text="{Binding Status}" FontSize="10" Foreground="#888888" Margin="0,0,8,0" />
+      <ProgressBar Grid.Column="1" Height="8"  Value="{Binding ProgressBarValue}" Maximum="{Binding ProgressBarMaximum}" IsVisible="{Binding IsBusy}" Margin="0,0,8,0" />
+
+      <StackPanel Orientation="Horizontal" Grid.Column="2" HorizontalAlignment="Right" VerticalAlignment="Bottom">
+        <TextBlock Text="{Binding TitleVersion}" FontStyle="Italic" FontSize="10" Margin="0,0,8,0" FontWeight="Bold" Foreground="#555555" />
+        <nuie:HeartedCredits HorizontalAlignment="Right"/>
+      </StackPanel>
     </Grid>
   </Grid>
 

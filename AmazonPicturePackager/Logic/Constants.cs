@@ -1,9 +1,12 @@
-﻿namespace AmazonPicturePackager.Logic
+﻿using System.Collections.Immutable;
+
+namespace AmazonPicturePackager.Logic
 {
     internal static class Constants
     {
-        public readonly static string[] amazonImageCodes = [
-                                                            "MAIN",  // Primary product image
+        public readonly static ImmutableArray<string> amazonImageCodes = [
+                                                            // Primary product image
+                                                            "MAIN",
                                                             // Additional product images
                                                             "PT01", "PT02", "PT03", "PT04", "PT05",
                                                             // Lifestyle images
