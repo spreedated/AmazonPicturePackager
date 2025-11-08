@@ -365,3 +365,4 @@ FodyWeavers.xsd
 # Sonar
 .sonarqube/
 .sonarlint/
+sonarqube.ps1
