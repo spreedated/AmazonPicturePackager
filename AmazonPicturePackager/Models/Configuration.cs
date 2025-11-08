@@ -2,7 +2,8 @@
 {
     public sealed record Configuration
     {
-        public int LastUsedImageCode { get; set; }
+        public string LastUsedImageCode { get; set; }
         public int LastUsedFilesPerZip { get; set; } = 200;
+        public bool OpenOutputFolderWhenDone { get; set; } = true;
     }
 }

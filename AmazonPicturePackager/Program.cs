@@ -7,6 +7,7 @@ using Serilog.Events;
 using Serilog.Extensions.Logging;
 using System;
 using System.IO;
+using System.Threading.Tasks;
 
 namespace AmazonPicturePackager
 {
@@ -17,7 +18,7 @@ namespace AmazonPicturePackager
         public static string AppLocalBasePath { get; } = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "neXn-Systems", "AmazonPictureManager");
 
         [STAThread]
-        public static void Main(string[] args)
+        public static async Task Main(string[] args)
         {
             // Setup logger
             Log.Logger = new LoggerConfiguration()
@@ -36,7 +37,7 @@ namespace AmazonPicturePackager
             string userConfigPath = Path.Combine(AppLocalBasePath, "config", "user-settings.json");
 
             Globals.UserConfig = new ConfigurationHandler<Models.Configuration>(new(userConfigPath));
-            Globals.UserConfig.Load().Wait();
+            await Globals.UserConfig.Load().ConfigureAwait(false);
             logger.LogInformation("Loaded user config");
 
             logger.LogTrace("Loading/building app...");

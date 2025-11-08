@@ -8,6 +8,11 @@ namespace AmazonPicturePackager.Views
         public MainWindow()
         {
             this.InitializeComponent();
+        }
+
+        private void Window_Initialized(object sender, System.EventArgs e)
+        {
+            this.DataContext = new MainWindowViewModel();
             ((MainWindowViewModel)this.DataContext).Instance = this;
         }
     }

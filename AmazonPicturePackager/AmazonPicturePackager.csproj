@@ -43,6 +43,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Processor\Processor.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Reference Include="neXn.Lib">
       <HintPath>..\Libraries\neXn.Lib.dll</HintPath>
     </Reference>
